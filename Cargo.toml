@@ -1,0 +1,16 @@
+[package]
+name = "xds"
+version = "0.1.0"
+authors = ["Michiel Kalkman <michiel@nosuchtype.com>"]
+
+[dependencies]
+env_logger = "0.5"
+actix = "0.5"
+actix-web = "0.4.10"
+
+futures = "0.1"
+serde = "1.0"
+serde_json = "1.0"
+serde_derive = "1.0"
+
+juniper = "0.9.2"
