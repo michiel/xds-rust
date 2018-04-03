@@ -1,0 +1,66 @@
+# Based on the "trust" template v0.1.1
+# https://github.com/japaric/trust/tree/v0.1.1
+
+dist: trusty
+language: rust
+services: docker
+sudo: required
+
+env:
+  global:
+    - CRATE_NAME=xds
+
+matrix:
+  include:
+    - env: TARGET=x86_64-unknown-linux-gnu
+    # - env: TARGET=x86_64-unknown-linux-musl
+    # - env: TARGET=x86_64-unknown-linux-gnu
+    #   rust: nightly
+
+before_install: set -e
+
+install:
+  - sh ci/install.sh
+  - source ~/.cargo/env || true
+
+script:
+  - bash ci/script.sh
+
+after_script: set +e
+
+before_deploy:
+  - sh ci/before_deploy.sh
+
+deploy:
+  # TODO update `api_key.secure`
+  # - Create a `public_repo` GitHub token. Go to: https://github.com/settings/tokens/new
+  # - Encrypt it: `travis encrypt 0123456789012345678901234567890123456789
+  # - Paste the output down here
+  api_key:
+    secure: "L5ndalrYKk/kW0CmKZB0tLW1I4r6++lmvYURv+3LRQ58wFyw6dxQA0GRdmM37SopedodI8b7iU5SsgrCEEwYT2ldqjU31QBMyGfuzmjg01SaPGnNRODbJWsXtVOjyjwsJ2F+vfhnq6z08/1BRizlJns5TdC2ZBZl3Cfifw00+8PiE/4HVeyvrdfzp9Gj6ZTM8k0OK9c+J6KjrIMK5Z+OxueZkYIJrg25hrZv2TjuB2l1hV8TvEp/I3WIcQAyu4X/A6O5ONbGvJG3y/wfgp3z8i4Cg+bZvhFSK+b6lTZMeL4gxYnPtMtBUpt2x6Fa6Gkgs5vo4HZ8/pHc7TPpLgX2KHSzDHxlC6avQXo029UoTnqCf36Bif6OMKbtnbUEoZWhwBFpNGoEzR6Eqvvg0cwTFyiILQnmIAKNETdGh09tml4jdiWEtu9z7jpLL0gHjwAJtZ8sEU/piiQQItzKedNQCoiz0r9t6KJCCJPzXPuk758JBoW2NFt3T87Ai+zXd4vGl6B4TPIU3sTsDpgGEud+Xyoef2W0MZfBgTNb5R7SQMWXT9Zx6ePPMLi0Hj8N3506KoHyKDQbmLueAa7ce7H355jlCSg2yre4O2Hv5WMlUMlUVYLUyTpqJqY0INVRR8b+WiyLSPIyuXElnAm8FO659TOK/KIdRUWQX0aYPfylmxI="
+  file_glob: true
+  file: $CRATE_NAME-$TRAVIS_TAG-$TARGET.*
+  on:
+    # TODO Here you can pick which targets will generate binary releases
+    # In this example, there are some targets that are tested using the stable
+    # and nightly channels. This condition makes sure there is only one release
+    # for such targets and that's generated using the stable channel
+    condition: $TRAVIS_RUST_VERSION = stable
+    tags: true
+  provider: releases
+  skip_cleanup: true
+
+cache: cargo
+before_cache:
+  # Travis can't cache files that are not readable by "others"
+  - chmod -R a+r $HOME/.cargo
+
+branches:
+  only:
+    # release tags
+    - /^v\d+\.\d+\.\d+.*$/
+    - master
+
+notifications:
+  email:
+    on_success: never

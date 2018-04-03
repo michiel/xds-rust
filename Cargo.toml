@@ -14,3 +14,7 @@ serde_json = "1.0"
 serde_derive = "1.0"
 
 juniper = "0.9.2"
+
+diesel = { version = "1.1.0", features = ["sqlite"] }
+diesel_infer_schema = { version = "1.1.0", features = ["sqlite"] }
+dotenv = "0.10"

@@ -3,10 +3,12 @@
 //! A simple example integrating juniper in actix-web
 extern crate serde;
 extern crate serde_json;
-#[macro_use]
-extern crate serde_derive;
-#[macro_use]
-extern crate juniper;
+#[macro_use] extern crate serde_derive;
+#[macro_use] extern crate juniper;
+#[macro_use] extern crate diesel;
+#[macro_use] extern crate diesel_infer_schema;
+
+extern crate dotenv;
 extern crate futures;
 extern crate actix;
 extern crate actix_web;
@@ -19,7 +21,9 @@ use juniper::http::GraphQLRequest;
 
 use futures::future::Future;
 
+mod models;
 mod schema;
+mod db;
 
 use schema::Schema;
 use schema::create_schema;
